@@ -81,14 +81,14 @@ p, a, li, blockquote, input {
     padding: var(--page-padding);
     margin-bottom: var(--page-padding);
 }
-.flight-select input {
+.flight-select select {
     width: 125px;
     margin-left: var(--page-padding);
 }
 
-input {
-    font-size: 24px;
-    height: 42px;
+select {
+    font-size: 18px;
+    height: 32px;
     border: 2px solid var(--orange);
     border-radius: 4px;
     padding: 0 12px;

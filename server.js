@@ -6,8 +6,12 @@ const morgan = require('morgan');
 const { flights } = require('./test-data/flightSeating');
 const PORT = process.env.PORT || 8000;
 
-
 let customerData = {};
+
+const handleFlights = (req, res) => {
+    const allFlights = Object.keys(flights);
+    res.status(200).json({ allFlights: allFlights });
+};
 
 const handleFlight = (req, res) => {
     const { flightNumber } = req.params;
@@ -28,8 +32,8 @@ express()
     .use(function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
         res.header(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept'
+            'Access-Control-Allow-Headers',
+            'Origin, X-Requested-With, Content-Type, Accept'
         );
         next();
     })
@@ -40,6 +44,7 @@ express()
     .set('view engine', 'ejs')
 
     // endpoints
+    .get("/flights", handleFlights)
     .get('/flights/:flightNumber', handleFlight)
     .post('/users', handleSubmitOrderForm)
     .get('/confirmed', (req, res) => {

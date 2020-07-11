@@ -1,12 +1,34 @@
 const flightInput = document.getElementById('flight');
 const seatsDiv = document.getElementById('seats-section');
 const confirmButton = document.getElementById('confirm-button');
-const form = document.querySelector('#seats');
+
+const flightNumbers = async () => {
+    let response = await fetch('/flights', {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+    
+    let { allFlights } = await response.json();
+    
+    allFlights.forEach((flight) => {
+        let option = document.createElement('option');
+        option.value = `${flight}`;
+        option.innerText = `${flight}`;
+        flightInput.appendChild(option);
+    });
+};
+
+flightNumbers();
 
 let selection = '';
 
 const renderSeats = (data) => {
     document.querySelector('.form-container').style.display = 'block';
+
+    seatsDiv.innerHTML = '';
 
     const alpha = ['A', 'B', 'C', 'D', 'E', 'F'];
     for (let r = 1; r < 11; r++) {
@@ -18,11 +40,9 @@ const renderSeats = (data) => {
             const seatNumber = `${r}${alpha[s - 1]}`;
             const seat = document.createElement('li');
 
-            // Two types of seats to render
             const seatOccupied = `<li><label class="seat"><span id="${seatNumber}" class="occupied">${seatNumber}</span></label></li>`;
             const seatAvailable = `<li><label class="seat"><input type="radio" name="seat" value="${seatNumber}" /><span id="${seatNumber}" class="avail">${seatNumber}</span></label></li>`;
 
-            // TODO: render the seat availability based on the data...
             if (data.find(seat => seat.id === seatNumber).isAvailable) {
                 seat.innerHTML = seatAvailable;
             } else {
@@ -51,25 +71,17 @@ const renderSeats = (data) => {
 
 const toggleFormContent = (event) => {
     const flightNumber = flightInput.value;
+    confirmButton.disabled = true;
     console.log('toggleFormContent: ', flightNumber);
-    // Only contact the server if the flight number is this format 'SA###'.
-    if (flightNumber === 'SA123' || flightNumber === 'SA231') {
-        fetch(`/flights/${flightNumber}`)
-            .then((res) => res.json())
-            .then((data) => {
-                // Pass the response data to renderSeats to create the appropriate seat-type.
-                renderSeats(data);
-            });
-    } else {
-        // error message if the number is not valid
-        return console.log('Error');
-    }
+    fetch(`/flights/${flightNumber}`)
+        .then((res) => res.json())
+        .then((data) => {
+            renderSeats(data);
+        });
 };
 
 const handleConfirmSeat = (event) => {
     event.preventDefault();
-
-    // TODO: disabled cta if !seat
 
     fetch('/users', {
         method: 'POST',
@@ -90,5 +102,3 @@ const handleConfirmSeat = (event) => {
         window.location.href = '/confirmed';
     })
 };
-
-flightInput.addEventListener('blur', toggleFormContent);
