@@ -4,8 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { flights } = require('./test-data/flightSeating');
-
 const PORT = process.env.PORT || 8000;
+
+
+let customerData = {};
 
 const handleFlight = (req, res) => {
     const { flightNumber } = req.params;
@@ -14,6 +16,12 @@ const handleFlight = (req, res) => {
     // is flightNumber in the array?
     res.json(flights[flightNumber])
     console.log('REAL FLIGHT: ', allFlights.includes(flightNumber));
+};
+
+const handleSubmitOrderForm = (req, res) => {
+    customerData = req.body;
+    // console.log(customerData);
+    res.json({ status: 'success' });
 };
 
 express()
@@ -29,8 +37,13 @@ express()
     .use(express.static('public'))
     .use(bodyParser.json())
     .use(express.urlencoded({ extended: false }))
+    .set('view engine', 'ejs')
 
     // endpoints
     .get('/flights/:flightNumber', handleFlight)
+    .post('/users', handleSubmitOrderForm)
+    .get('/confirmed', (req, res) => {
+        res.render('pages/confirmed', { customerData: customerData });
+    })
     .use((req, res) => res.send('Not Found'))
     .listen(PORT, () => console.log(`Listening on port ${PORT}`));

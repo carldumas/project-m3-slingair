@@ -1,6 +1,7 @@
 const flightInput = document.getElementById('flight');
 const seatsDiv = document.getElementById('seats-section');
 const confirmButton = document.getElementById('confirm-button');
+const form = document.querySelector('#seats');
 
 let selection = '';
 
@@ -20,7 +21,7 @@ const renderSeats = (data) => {
             // Two types of seats to render
             const seatOccupied = `<li><label class="seat"><span id="${seatNumber}" class="occupied">${seatNumber}</span></label></li>`;
             const seatAvailable = `<li><label class="seat"><input type="radio" name="seat" value="${seatNumber}" /><span id="${seatNumber}" class="avail">${seatNumber}</span></label></li>`;
-            
+
             // TODO: render the seat availability based on the data...
             if (data.find(seat => seat.id === seatNumber).isAvailable) {
                 seat.innerHTML = seatAvailable;
@@ -61,24 +62,33 @@ const toggleFormContent = (event) => {
             });
     } else {
         // error message if the number is not valid
-        return console.log('Bad data');
-    }    
-
+        return console.log('Error');
+    }
 };
 
 const handleConfirmSeat = (event) => {
     event.preventDefault();
-    // TODO: everything in here!
+
+    // TODO: disabled cta if !seat
+
     fetch('/users', {
         method: 'POST',
         body: JSON.stringify({
-        givenName: document.getElementById('givenName').value,
+            givenName: document.getElementById('givenName').value,
+            surname: document.getElementById('surname').value,
+            email: document.getElementById('email').value,
+            seats: document.querySelector('.selected').innerText,
+            flight: document.getElementById('flight').value,
         }),
         headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
         },
-    });
+    })
+    .then((res) => res.json())
+    .then(() => {
+        window.location.href = '/confirmed';
+    })
 };
 
 flightInput.addEventListener('blur', toggleFormContent);

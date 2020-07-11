@@ -5,7 +5,7 @@
 - Implement HTML/CSS for the app.
 - Use JS to render the seats based on the data, as provided by the BE.
   - If a seat is marked as `isAvailable: false`, it shouldn't be selectable.
-  - I have the the barebones of this setup already. Just need to pipe in the test-data and hope it doesn't break!
+  - I have the barebones of this setup already. Just need to pipe in the test-data and hope it doesn't break!
 
 ### Pages
 
