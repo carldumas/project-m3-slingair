@@ -1,4 +1,4 @@
-const flightInput = document.getElementById('flight');
+const selectFlight = document.getElementById('flight');
 const seatsDiv = document.getElementById('seats-section');
 const confirmButton = document.getElementById('confirm-button');
 
@@ -17,7 +17,7 @@ const flightNumbers = async () => {
         let option = document.createElement('option');
         option.value = `${flight}`;
         option.innerText = `${flight}`;
-        flightInput.appendChild(option);
+        selectFlight.appendChild(option);
     });
 };
 
@@ -70,7 +70,7 @@ const renderSeats = (data) => {
 };
 
 const toggleFormContent = (event) => {
-    const flightNumber = flightInput.value;
+    const flightNumber = selectFlight.value;
     confirmButton.disabled = true;
     console.log('toggleFormContent: ', flightNumber);
     fetch(`/flights/${flightNumber}`)
