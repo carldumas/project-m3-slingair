@@ -3,22 +3,29 @@ const seatsDiv = document.getElementById('seats-section');
 const confirmButton = document.getElementById('confirm-button');
 
 const flightNumbers = async () => {
-    let response = await fetch('/flights', {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-    });
-    
-    let { allFlights } = await response.json();
-    
-    allFlights.forEach((flight) => {
-        let option = document.createElement('option');
-        option.value = `${flight}`;
-        option.innerText = `${flight}`;
-        selectFlight.appendChild(option);
-    });
+    try {
+        let response = await fetch('/flights', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        let { allFlights } = await response.json();
+
+        allFlights.forEach((flight) => {
+            let option = document.createElement('option');
+            option.value = `${flight}`;
+            option.innerText = `${flight}`;
+            selectFlight.appendChild(option);
+        });
+    } catch (error) {
+        console.log('Error ' + error);
+        window.alert(
+            'We are unable to process your request at this time. \nPlease try again later.'
+        );
+    }
 };
 
 flightNumbers();
@@ -43,12 +50,12 @@ const renderSeats = (data) => {
             const seatOccupied = `<li><label class="seat"><span id="${seatNumber}" class="occupied">${seatNumber}</span></label></li>`;
             const seatAvailable = `<li><label class="seat"><input type="radio" name="seat" value="${seatNumber}" /><span id="${seatNumber}" class="avail">${seatNumber}</span></label></li>`;
 
-            if (data.find(seat => seat.id === seatNumber).isAvailable) {
+            if (data.find((seat) => seat.id === seatNumber).isAvailable) {
                 seat.innerHTML = seatAvailable;
             } else {
-                seat.innerHTML = seatOccupied
+                seat.innerHTML = seatOccupied;
             }
-            
+
             row.appendChild(seat);
         }
     }
@@ -56,15 +63,17 @@ const renderSeats = (data) => {
     let seatMap = document.forms['seats'].elements['seat'];
     seatMap.forEach((seat) => {
         seat.onclick = () => {
-        selection = seat.value;
-        seatMap.forEach((x) => {
-            if (x.value !== seat.value) {
-                document.getElementById(x.value).classList.remove('selected');
-            }
-        });
-        document.getElementById(seat.value).classList.add('selected');
-        document.getElementById('seat-number').innerText = `(${selection})`;
-        confirmButton.disabled = false;
+            selection = seat.value;
+            seatMap.forEach((x) => {
+                if (x.value !== seat.value) {
+                    document
+                        .getElementById(x.value)
+                        .classList.remove('selected');
+                }
+            });
+            document.getElementById(seat.value).classList.add('selected');
+            document.getElementById('seat-number').innerText = `(${selection})`;
+            confirmButton.disabled = false;
         };
     });
 };
@@ -72,11 +81,17 @@ const renderSeats = (data) => {
 const toggleFormContent = (event) => {
     const flightNumber = selectFlight.value;
     confirmButton.disabled = true;
-    console.log('toggleFormContent: ', flightNumber);
+
     fetch(`/flights/${flightNumber}`)
         .then((res) => res.json())
         .then((data) => {
             renderSeats(data);
+        })
+        .catch((error) => {
+            console.log('Error ' + error);
+            window.alert(
+                'We are unable to process your request at this time. \nPlease try again later.'
+            );
         });
 };
 
@@ -97,8 +112,14 @@ const handleConfirmSeat = (event) => {
             'Content-Type': 'application/json',
         },
     })
-    .then((res) => res.json())
-    .then(() => {
-        window.location.href = '/confirmed';
-    })
+        .then((res) => res.json())
+        .then(() => {
+            window.location.href = '/confirmed';
+        })
+        .catch((error) => {
+            console.log('Error ' + error);
+            window.alert(
+                'We are unable to process your request at this time. \nPlease try again later.'
+            );
+        });
 };
